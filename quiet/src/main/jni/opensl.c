@@ -432,7 +432,7 @@ SLresult quiet_opensl_create_recorder(quiet_opensl_system *sys,
         return res;
     }
 
-    size_t num_bytes = c->num_buf * num_record_channels * sizeof(opensl_sample_t);
+    size_t num_bytes = c->num_frames * num_record_channels * sizeof(opensl_sample_t);
     for (size_t i = 0; i < c->num_buf; i++) {
         // Enqueue() expects the number of bytes, not frames or samples
         res = (*bufferQueueItf)
