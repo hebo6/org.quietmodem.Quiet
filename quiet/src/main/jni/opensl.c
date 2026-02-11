@@ -317,6 +317,7 @@ void quiet_opensl_destroy_player(quiet_opensl_player *player) {
 }
 
 void record_callback(SLAndroidSimpleBufferQueueItf queueItf, void *user_data) {
+    ALOG("record_callback ENTER");
     quiet_opensl_recorder *recorder = (quiet_opensl_recorder *)user_data;
     quiet_opensl_consumer *c = (quiet_opensl_consumer *)recorder->consumer;
     static int _rcb = 0; _rcb++;
@@ -453,6 +454,7 @@ SLresult quiet_opensl_create_recorder(quiet_opensl_system *sys,
     }
 
     res = (*recordItf)->SetRecordState(recordItf, SL_RECORDSTATE_RECORDING);
+    ALOG("SetRecordState result=%d", (int)res);
     if (res != SL_RESULT_SUCCESS) {
         return res;
     }
