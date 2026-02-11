@@ -1,4 +1,12 @@
 #include "quiet-jni.h"
+#include <android/log.h>
+#include <math.h>
+#define ALOG(...) __android_log_print(ANDROID_LOG_DEBUG, "quiet-audio", __VA_ARGS__)
+static void _log_audio_level(const float *buf, size_t n, int count) {
+    float mx = 0.0f, sm = 0.0f;
+    for (size_t i = 0; i < n; i++) { float a = fabsf(buf[i]); if (a > mx) mx = a; sm += a; }
+    ALOG("record_cb #%d: frames=%zu max=%.4f avg=%.6f", count, n, mx, n > 0 ? sm / n : 0.0f);
+}
 
 typedef enum {
     AUDIO_SOURCE_DEFAULT             = 0,
@@ -311,8 +319,10 @@ void quiet_opensl_destroy_player(quiet_opensl_player *player) {
 void record_callback(SLAndroidSimpleBufferQueueItf queueItf, void *user_data) {
     quiet_opensl_recorder *recorder = (quiet_opensl_recorder *)user_data;
     quiet_opensl_consumer *c = (quiet_opensl_consumer *)recorder->consumer;
+    static int _rcb = 0; _rcb++;
     convert_stereoopensl2monofloat(c->buf[c->buf_idx], c->scratch, c->num_frames, num_record_channels);
     c->consume(c->consume_arg, c->scratch, c->num_frames);
+    if (_rcb % 100 == 1) _log_audio_level(c->scratch, c->num_frames, _rcb);
 
     SLresult res;
     size_t num_bytes = c->num_frames * num_record_channels * sizeof(opensl_sample_t);
