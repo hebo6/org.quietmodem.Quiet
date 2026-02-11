@@ -2,10 +2,14 @@
 #include <android/log.h>
 #include <math.h>
 #define ALOG(...) __android_log_print(ANDROID_LOG_DEBUG, "quiet-audio", __VA_ARGS__)
-static void _log_audio_level(const float *buf, size_t n, int count) {
+static void _log_audio_level(const float *buf, size_t n, int count, float *peak_max) {
     float mx = 0.0f, sm = 0.0f;
     for (size_t i = 0; i < n; i++) { float a = fabsf(buf[i]); if (a > mx) mx = a; sm += a; }
-    ALOG("record_cb #%d: frames=%zu max=%.4f avg=%.6f", count, n, mx, n > 0 ? sm / n : 0.0f);
+    if (mx > *peak_max) *peak_max = mx;
+    if (count % 100 == 0) {
+        ALOG("record_cb #%d: frames=%zu cur_max=%.4f peak100=%.4f avg=%.6f", count, n, mx, *peak_max, n > 0 ? sm / n : 0.0f);
+        *peak_max = 0.0f;
+    }
 }
 
 typedef enum {
@@ -325,7 +329,8 @@ void record_callback(SLAndroidSimpleBufferQueueItf queueItf, void *user_data) {
     ALOG("cb#%d: convert done", _rcb);
     c->consume(c->consume_arg, c->scratch, c->num_frames);
     ALOG("cb#%d: consume done", _rcb);
-    if (_rcb % 100 == 1) _log_audio_level(c->scratch, c->num_frames, _rcb);
+    static float _peak_max = 0.0f;
+    _log_audio_level(c->scratch, c->num_frames, _rcb, &_peak_max);
 
     SLresult res;
     size_t num_bytes = c->num_frames * num_record_channels * sizeof(opensl_sample_t);
