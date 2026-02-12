@@ -11,6 +11,7 @@ public abstract class BaseNetworkInterface {
     private native void nativeClose();
     private native void nativeTerminate(int urgency);
     private native void nativeFree();
+    public static native int nativeGetRecvCount();
 
     protected QuietSystem quietSystem;
     private long interface_ptr;

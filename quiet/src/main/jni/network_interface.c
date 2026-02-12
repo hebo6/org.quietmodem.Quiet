@@ -223,3 +223,8 @@ JNIEXPORT void JNICALL Java_org_quietmodem_Quiet_BaseNetworkInterface_nativeFree
     quiet_lwip_android *e = (quiet_lwip_android *)recover_pointer(j_intf);
     free(e);
 }
+
+JNIEXPORT jint JNICALL Java_org_quietmodem_Quiet_BaseNetworkInterface_nativeGetRecvCount(
+        JNIEnv *env, jclass clazz) {
+    return (jint)quiet_lwip_get_recv_count();
+}
