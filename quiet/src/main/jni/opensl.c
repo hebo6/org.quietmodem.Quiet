@@ -21,6 +21,8 @@ typedef enum {
     AUDIO_SOURCE_CAMCORDER           = 5,
     AUDIO_SOURCE_VOICE_RECOGNITION   = 6,
     AUDIO_SOURCE_VOICE_COMMUNICATION = 7,
+    AUDIO_SOURCE_REMOTE_SUBMIX       = 8,
+    AUDIO_SOURCE_UNPROCESSED         = 9,
     AUDIO_SOURCE_CNT,
     AUDIO_SOURCE_MAX                 = AUDIO_SOURCE_CNT - 1,
 } audio_source_t;
@@ -413,6 +415,8 @@ SLresult quiet_opensl_create_recorder(quiet_opensl_system *sys,
             presetValue = SL_ANDROID_RECORDING_PRESET_CAMCORDER;
         } else if (c->recording_preset == AUDIO_SOURCE_VOICE_COMMUNICATION) {
             presetValue = SL_ANDROID_RECORDING_PRESET_VOICE_COMMUNICATION;
+        } else if (c->recording_preset == AUDIO_SOURCE_UNPROCESSED) {
+            presetValue = 5; // SL_ANDROID_RECORDING_PRESET_UNPROCESSED
         } else {
             presetValue = SL_ANDROID_RECORDING_PRESET_NONE;
         }
