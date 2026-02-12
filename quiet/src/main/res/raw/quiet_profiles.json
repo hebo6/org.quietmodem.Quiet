@@ -30,7 +30,7 @@
       "checksum_scheme": "crc32",
       "inner_fec_scheme": "v27",
       "outer_fec_scheme": "none",
-      "frame_length": 25,
+      "frame_length": 128,
       "modulation": {
         "center_frequency": 4200,
         "gain": 0.5
